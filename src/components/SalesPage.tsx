@@ -56,7 +56,6 @@ const SalesPage: React.FC = () => {
   const [reservedUsername, setReservedUsername] = useState('');
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showReservation, setShowReservation] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [formFocused, setFormFocused] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -91,21 +90,6 @@ const SalesPage: React.FC = () => {
 
   // External checkout URL - single point to update
   const EXTERNAL_CHECKOUT_URL = "https://seguro.fenjes.com/r/OERKAUJXQP";
-
-  // Efeito para pop-up de saída
-  useEffect(() => {
-    const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 0 && !showPopup && scrollProgress > 0.3) {
-        setShowPopup(true);
-      }
-    };
-
-    document.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      document.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, [showPopup, scrollProgress]);
 
   // Monitorar progresso de rolagem
   useEffect(() => {
@@ -1374,69 +1358,6 @@ const SalesPage: React.FC = () => {
                   </p>
                 </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Pop-up de saída */}
-        <AnimatePresence>
-          {showPopup && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
-              onClick={() => setShowPopup(false)}
-            >
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="bg-white rounded-xl p-5 max-w-md w-full"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex justify-end">
-                  <button
-                    onClick={() => setShowPopup(false)}
-                    className="w-7 h-7 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="text-center mb-4">
-                  <div className="bg-yellow-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <AlertTriangle className="w-8 h-8 text-yellow-600" />
-                  </div>
-                  <h3 className="text-xl font-bold text-[#2D1441] mb-2">
-                    Espere um momento!
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    Esta oferta especial está disponível apenas hoje. Se sair
-                    agora, sua vaga será liberada para outra pessoa.
-                  </p>
-
-                  <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-3 mb-4">
-                    <p className="text-yellow-800 text-sm font-medium">
-                      Oferta exclusiva: R$19,90 (92% de desconto)
-                    </p>
-                  </div>
-
-                  <motion.button
-                    onClick={() => {
-                      setShowPopup(false);
-                      redirectToCheckout();
-                    }}
-                    className="w-full bg-[#7432B4] text-white font-medium py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-[#6822A6] transition-colors"
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                  >
-                    Garantir minha vaga
-                    <ArrowRight className="w-4 h-4" />
-                  </motion.button>
-                </div>
-              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
