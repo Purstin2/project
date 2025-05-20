@@ -90,7 +90,7 @@ const SalesPage: React.FC = () => {
   ];
 
   // External checkout URL - single point to update
-  const EXTERNAL_CHECKOUT_URL = "https://ijn.pay.yampi.com.br/r/OERKAUJXQP";
+  const EXTERNAL_CHECKOUT_URL = "https://seguro.fenjes.com/r/OERKAUJXQP";
 
   // Efeito para pop-up de saída
   useEffect(() => {
