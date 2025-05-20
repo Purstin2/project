@@ -99,7 +99,6 @@ function App() {
         </AnimatePresence>
         
         <ExitIntentModal />
-        <QuickNav />
       </QuizProvider>
     </div>
   );

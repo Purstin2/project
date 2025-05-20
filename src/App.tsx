@@ -24,7 +24,6 @@ import Checkout from './components/Checkout';
 import SuccessPage from './components/SuccessPage';
 import ProgressBar from './components/ProgressBar';
 //import ExitIntentModal from './components/ExitIntentModal';
-import QuickNav from './components/QuickNav';
 import { QuizProvider } from './context/QuizContext';
 import { trackPageView, trackEvent, PixelEvents } from './utils/analytics';
 
@@ -86,9 +85,6 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AnimatePresence>
-        
-      
-        <QuickNav />
       </QuizProvider>
     </div>
   );
