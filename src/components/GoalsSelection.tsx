@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuiz } from '../context/QuizContext';
 import AnimatedPage from './AnimatedPage';
-import EmailCaptureModal from './EmailCaptureModal';
 
 const CustomHeader = () => {
   return (
@@ -24,7 +23,6 @@ const GoalsSelection: React.FC = () => {
   const [focusedGoal, setFocusedGoal] = useState<string | null>(null);
   const [progressStage, setProgressStage] = useState(0);
   const [userInsight, setUserInsight] = useState('');
-  const [showEmailModal, setShowEmailModal] = useState(false);
 
   // Insights revisados com foco na mobilidade articular
   const insights = {
@@ -68,16 +66,8 @@ const GoalsSelection: React.FC = () => {
   const handleNextStep = () => {
     if (selectedCount > 0) {
       setSelectedGoalsCount(selectedCount);
-      setShowEmailModal(true);
+      navigate('/body-type');
     }
-  };
-
-  const handleEmailModalComplete = (emailCaptured = false) => {
-    setShowEmailModal(false);
-    if (emailCaptured) {
-      console.log('Email capturado com sucesso!');
-    }
-    navigate('/body-type');
   };
 
   // Reordenação dos objetivos com foco em mobilidade e articulações
@@ -230,12 +220,6 @@ const GoalsSelection: React.FC = () => {
           </div>
         </main>
       </div>
-      {showEmailModal && (
-        <EmailCaptureModal
-          onClose={() => handleEmailModalComplete(false)}
-          onSubmit={(email) => handleEmailModalComplete(true)}
-        />
-      )}
     </AnimatedPage>
   );
 };

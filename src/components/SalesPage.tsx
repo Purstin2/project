@@ -26,6 +26,7 @@ import confetti from 'canvas-confetti';
 import Header from './Header';
 import AnimatedPage from './AnimatedPage';
 import { useQuiz } from '../context/QuizContext';
+import { trackEvent, PixelEvents } from '../utils/analytics';
 
 const SalesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -89,7 +90,7 @@ const SalesPage: React.FC = () => {
   ];
 
   // External checkout URL - single point to update
-  const EXTERNAL_CHECKOUT_URL = "https://pay.hotmart.com/checkout";
+  const EXTERNAL_CHECKOUT_URL = "https://ijn.pay.yampi.com.br/r/OERKAUJXQP";
 
   // Efeito para pop-up de saída
   useEffect(() => {
@@ -202,6 +203,12 @@ const SalesPage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isEmailValid) {
+      // Rastrear evento de Lead
+      trackEvent(PixelEvents.LEAD, {
+        content_name: 'sales_page_form',
+        content_category: 'lead_capture'
+      });
+      
       // Efeito de confete
       setShowConfetti(true);
       confetti({
@@ -227,6 +234,13 @@ const SalesPage: React.FC = () => {
       );
       setProcessingPurchase(true);
 
+      // Rastrear evento de Iniciar Checkout
+      trackEvent(PixelEvents.INITIATE_CHECKOUT, {
+        currency: 'BRL',
+        value: 197.00,
+        content_name: 'Yoga na Cadeira Premium'
+      });
+
       // Redirect to external checkout
       setTimeout(() => {
         window.location.href = EXTERNAL_CHECKOUT_URL;
@@ -236,6 +250,13 @@ const SalesPage: React.FC = () => {
 
   // Redirect to external checkout
   const redirectToCheckout = () => {
+    // Rastrear evento de Iniciar Checkout
+    trackEvent(PixelEvents.INITIATE_CHECKOUT, {
+      currency: 'BRL',
+      value: 197.00,
+      content_name: 'Yoga na Cadeira Premium'
+    });
+    
     window.location.href = EXTERNAL_CHECKOUT_URL;
   };
 
@@ -376,12 +397,26 @@ const SalesPage: React.FC = () => {
   const scrollToForm = () => {
     document.getElementById('buy-form')?.scrollIntoView({ behavior: 'smooth' });
 
+    // Rastrear evento de interesse
+    trackEvent('FormView', {
+      content_name: 'sales_page_form_view'
+    });
+
     // Focar o input de email
     setTimeout(() => {
       setFormFocused(true);
       document.getElementById('email-input')?.focus();
     }, 500);
   };
+
+  // Adicionar rastreamento de visualização de página quando o componente montar
+  useEffect(() => {
+    // Rastrear visualização da página de vendas
+    trackEvent('SalesPageDetailedView', {
+      content_name: 'sales_page',
+      content_category: 'sales'
+    });
+  }, []);
 
   return (
     <AnimatedPage>

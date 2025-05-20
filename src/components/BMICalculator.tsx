@@ -248,12 +248,10 @@ const BMICalculator: React.FC = () => {
             </motion.div>
           )}
 
-          
-
           {/* Botão de continuar */}
           <motion.button
             onClick={handleNext}
-            className="w-full bg-[#7432B4] text-white font-semibold py-4 px-6 rounded-2xl hover:bg-[#6822A6] transition-colors shadow-lg"
+            className="w-full bg-[#7432B4] text-white font-semibold py-4 px-6 rounded-2xl hover:bg-[#6822A6] transition-colors shadow-lg flex items-center justify-center"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >

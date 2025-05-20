@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import AgeSelection from './components/AgeSelection';
@@ -26,9 +26,35 @@ import ProgressBar from './components/ProgressBar';
 //import ExitIntentModal from './components/ExitIntentModal';
 import QuickNav from './components/QuickNav';
 import { QuizProvider } from './context/QuizContext';
+import { trackPageView, trackEvent, PixelEvents } from './utils/analytics';
 
 function App() {
   const location = useLocation();
+  
+  // Rastrear visualização de página quando a rota mudar
+  useEffect(() => {
+    // Rastrear visualização de página padrão
+    trackPageView();
+    
+    // Rastrear evento específico de visualização de conteúdo com o caminho atual
+    trackEvent(PixelEvents.VIEW_CONTENT, {
+      content_name: location.pathname,
+      content_category: 'page_view'
+    });
+    
+    // Eventos específicos para etapas importantes do funil
+    if (location.pathname === '/results') {
+      trackEvent('QuizCompleted');
+    } else if (location.pathname === '/sales') {
+      trackEvent('SalesPageView');
+    } else if (location.pathname === '/checkout') {
+      trackEvent(PixelEvents.INITIATE_CHECKOUT);
+    } else if (location.pathname === '/success') {
+      trackEvent(PixelEvents.PURCHASE);
+    }
+    
+  }, [location.pathname]);
+  
   return (
     <div className="min-h-screen bg-white flex flex-col overflow-hidden">
       <QuizProvider>

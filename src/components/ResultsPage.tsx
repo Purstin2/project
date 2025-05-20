@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion'; // Adicionado AnimatePresence aqui
 import { useNavigate } from 'react-router-dom';
 import { 
-  Award, 
   CheckCircle, 
   ArrowRight, 
   Shield,
-  Star,
   AlertTriangle,
   Zap,
   Heart
@@ -15,6 +13,7 @@ import confetti from 'canvas-confetti';
 import Header from './Header';
 import AnimatedPage from './AnimatedPage';
 import { useQuiz } from '../context/QuizContext';
+import { trackEvent, PixelEvents } from '../utils/analytics';
 
 const ResultsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -44,8 +43,25 @@ const ResultsPage: React.FC = () => {
       setShowDetails(true);
     }, 1500);
     
+    // Rastrear conclusão do quiz
+    trackEvent('QuizCompletionDetail', {
+      content_name: 'results_page',
+      content_category: 'quiz_completion'
+    });
+    
     return () => clearTimeout(timer);
   }, []);
+  
+  // Função para navegar para a página de vendas com rastreamento
+  const handleGoToSales = () => {
+    // Rastrear clique no CTA
+    trackEvent('ResultsCTAClick', {
+      content_name: 'results_to_sales',
+      content_category: 'conversion'
+    });
+    
+    navigate('/sales');
+  };
   
   // Identificar os principais desafios baseados nas respostas
   const getChallenges = () => {
@@ -77,7 +93,7 @@ const ResultsPage: React.FC = () => {
     });
     
     // Adicionar desafio baseado no IMC, se relevante
-    if (bodyMassIndex > 25) {
+    if (bodyMassIndex && bodyMassIndex > 25) {
       challenges.push({
         title: 'Influência do peso',
         description: 'Pressão nas articulações intensificando desconforto e limitação'
@@ -136,6 +152,16 @@ const ResultsPage: React.FC = () => {
     }
     
     return solutions.slice(0, 3);
+  };
+
+  // Determinar a posição do marcador de saúde baseado no IMC
+  const getHealthMarkerPosition = () => {
+    if (!bodyMassIndex) return '50%'; // Posição padrão se não tiver IMC
+    
+    if (bodyMassIndex > 30) return '20%';
+    if (bodyMassIndex > 25) return '35%';
+    if (bodyMassIndex > 22) return '55%';
+    return '70%';
   };
   
   return (
@@ -201,7 +227,7 @@ const ResultsPage: React.FC = () => {
                     <motion.div 
                       className="w-4 h-10 bg-white border border-gray-300 rounded-full shadow-md transform -translate-y-7.5 flex items-center justify-center"
                       initial={{ left: '20%', opacity: 0 }}
-                      animate={{ left: `${bodyMassIndex > 30 ? '20%' : bodyMassIndex > 25 ? '35%' : bodyMassIndex > 22 ? '55%' : '70%'}`, opacity: 1 }}
+                      animate={{ left: getHealthMarkerPosition(), opacity: 1 }}
                       transition={{ delay: 2.7, duration: 0.8 }}
                       style={{ position: 'relative', marginTop: '-18px' }}
                     >
@@ -335,12 +361,13 @@ const ResultsPage: React.FC = () => {
                   )}
                 </AnimatePresence>
                 
-                {/* CTA para conhecer o método (sem venda direta) */}
+                {/* CTA para conhecer o método */}
                 <motion.button
-                  onClick={() => navigate('/sales')}
-                  className="w-full bg-[#7432B4] text-white font-medium py-3 px-6 rounded-xl hover:bg-[#6822A6] transition-all mb-2 flex items-center justify-center gap-2"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  onClick={handleGoToSales}
+                  className={`w-full bg-[#7432B4] text-white font-medium py-3 px-6 rounded-xl hover:bg-[#6822A6] transition-all mb-2 flex items-center justify-center gap-2 ${!showDetails ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  whileHover={{ scale: showDetails ? 1.02 : 1 }}
+                  whileTap={{ scale: showDetails ? 0.98 : 1 }}
+                  disabled={!showDetails}
                 >
                   Conhecer o método completo
                   <ArrowRight className="w-4 h-4" />
@@ -350,21 +377,6 @@ const ResultsPage: React.FC = () => {
                   Desenvolvido por especialistas em saúde articular feminina
                 </p>
               </div>
-            </motion.div>
-            
-            {/* Selo de credibilidade */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 2.5 }}
-              className="bg-white rounded-lg p-3 border border-gray-200 shadow-sm mb-4 text-center"
-            >
-              <div className="flex justify-center mb-1">
-                <Award className="w-5 h-5 text-purple-700" />
-              </div>
-              <h3 className="text-xs text-[#2D1441]">
-                Sistema certificado pela Associação Brasileira de Fisioterapia e Saúde Articular
-              </h3>
             </motion.div>
           </div>
         </main>
