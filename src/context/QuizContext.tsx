@@ -1,10 +1,4 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
 
 type AgeRange = '35-44' | '45-54' | '55-64' | '65+' | null;
 type ChairYogaExperience = 'regular' | 'tried' | 'never' | null;
@@ -80,17 +74,9 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
   useEffect(() => {
     const initSession = async () => {
       try {
-        const { data, error } = await supabase
-          .from('quiz_sessions')
-          .insert([{
-            last_step: '/',
-            user_agent: navigator.userAgent
-          }])
-          .select()
-          .single();
-
-        if (error) throw error;
-        setSessionId(data.id);
+        // Generate a random session ID instead of using Supabase
+        const randomSessionId = Math.random().toString(36).substring(2, 15);
+        setSessionId(randomSessionId);
       } catch (err) {
         console.error('Error creating session:', err);
       }
@@ -101,26 +87,9 @@ export const QuizProvider: React.FC<QuizProviderProps> = ({ children }) => {
 
   // Update session progress on route change
   useEffect(() => {
-    const updateProgress = async (path: string) => {
-      if (!sessionId) return;
-
-      try {
-        await supabase
-          .from('quiz_sessions')
-          .update({ 
-            last_step: path,
-            completed: path === '/success',
-            email: email // Update email if available
-          })
-          .eq('id', sessionId);
-      } catch (err) {
-        console.error('Error updating session:', err);
-      }
-    };
-
-    // Listen for route changes
     const handleRouteChange = () => {
-      updateProgress(window.location.pathname);
+      // Local tracking of route changes - no Supabase
+      console.log('Route changed to:', window.location.pathname);
     };
 
     window.addEventListener('popstate', handleRouteChange);

@@ -2,13 +2,6 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, X } from 'lucide-react';
 import { useQuiz } from '../context/QuizContext';
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
 
 interface EmailCaptureModalProps {
   onClose: () => void;
@@ -27,20 +20,7 @@ const EmailCaptureModal: React.FC<EmailCaptureModalProps> = ({ onClose, onSubmit
 
     if (email && email.includes('@')) {
       try {
-        // Save email to Supabase
-        const { error: supabaseError } = await supabase
-          .from('emails')
-          .insert([{ email }]);
-
-        if (supabaseError) {
-          if (supabaseError.code === '23505') { // Unique violation
-            setError('Este email já está cadastrado.');
-            return;
-          }
-          throw supabaseError;
-        }
-
-        // Save to context and show success
+        // Save to context and show success (no Supabase)
         saveEmailToContext(email);
         setSubmitted(true);
         
